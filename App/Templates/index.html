@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home Page
+{% endblock %}
+
+{% block content %}
+<main role="main" class="container">
+  <h1 class="mt-5">Location App Showing Objects Named After People</h1>
+  <p class="lead">Insert your current location:</p>
+  <form method="POST">
+    <input name="latitude" type="text" placeholder="latitude" />
+    <input name="longitude" type="text" placeholder="longitude" />
+    <input type="submit" value="Send">
+  </form>
+</main>
+{% endblock %}
