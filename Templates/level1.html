@@ -6,15 +6,25 @@ Home Page
 
 {% block content %}
 <main role="main" class="container">
-  <h1 class="mt-5">Streets</h1>
-  <p class="lead">You inserted the following coordinates: ({{latitude}}, {{longitude}})</p>
+  <h1 class="mt-5">Level 1</h1>
+  <p class="lead">You have entered the coordinates ({{latitude}}, {{longitude}}) and the radius {{radius}} km.</p>
 
   Change your current location:
   <form method="POST">
     <input name="latitude" type="text" placeholder="latitude" />
     <input name="longitude" type="text" placeholder="longitude" />
+    <input name="radius" type="text" placeholder="radius" />
     <input type="submit" value="Go">
   </form>
+
+  <br>
+  <br>
+
+  <iframe style="width: 80vw; height: 50vh; border: none;"
+          src="{{_map}}"
+          referrerpolicy="origin"
+          sandbox="allow-scripts allow-same-origin allow-popups">
+  </iframe>
 
   <br>
   <br>
@@ -40,7 +50,7 @@ Home Page
     </tr>
     {% endfor %}
     </tbody>
-</table>
+  </table>
 
 
 </main>
