@@ -11,7 +11,7 @@ from SPARQL_queries import create_df_level1, create_map_level1
 # to start the app, run "python app.py" or "flask run" in your terminal
 
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="./Templates")
 Bootstrap(app)
 
 
