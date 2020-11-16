@@ -13,12 +13,14 @@ Home Page
   <form method="POST">
     <input name="latitude" type="text" placeholder="latitude" />
     <input name="longitude" type="text" placeholder="longitude" />
-    <input name="radius" type="text" placeholder="radius" />
+    <input name="radius" type="text" placeholder="radius (km)" />
     <input type="submit" value="Go">
   </form>
   <br>
   <br>
   <p>Note: Latitudes range from -90 to 90. Longitudes range from -180 to 80.<br>
-    Mannheim: (49.49671, 8.47955)</p>
+    Currently only locations within Germany are supported. Default value for radius is 10 km.<br>
+    <br>
+    Example: Mannheim has the coordinates (49.49671, 8.47955).</p>
 </main>
 {% endblock %}

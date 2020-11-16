@@ -25,6 +25,8 @@ def index_post():
     latitude = request.form['latitude']
     longitude = request.form['longitude']
     radius = request.form['radius']
+    if radius == "":
+        radius = '10'
     df = create_df_level1(latitude=latitude, longitude=longitude, radius=radius, limit='30')
     _map = create_map_level1(latitude=latitude, longitude=longitude, radius=radius, limit='30')
     return render_template('level1.html',
