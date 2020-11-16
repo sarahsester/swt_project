@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home Page
+{% endblock %}
+
+{% block content %}
+<main role="main" class="container">
+  <h1 class="mt-5">Location App Showing Objects Named After People</h1>
+  <br>
+  <br>
+  <p class="lead">Insert your current location:</p>
+  <form method="POST">
+    <input name="latitude" type="text" placeholder="latitude" />
+    <input name="longitude" type="text" placeholder="longitude" />
+    <input name="radius" type="text" placeholder="radius" />
+    <input type="submit" value="Go">
+  </form>
+  <br>
+  <br>
+  <p>Note: Latitudes range from -90 to 90. Longitudes range from -180 to 80.<br>
+    Mannheim: (49.49671, 8.47955)</p>
+</main>
+{% endblock %}
