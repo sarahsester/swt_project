@@ -1,5 +1,5 @@
 import pandas as pd
-from SPARQLWrapper import SPARQLWrapper, JSON, CSV
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 
 def create_df_level1(latitude='49.487777777', longitude='8.466111111', radius='15', limit='30'):

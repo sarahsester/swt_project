@@ -2,11 +2,13 @@ from flask import Flask, request, render_template
 from flask_bootstrap import Bootstrap
 from SPARQL_queries import create_df_level1, create_map_level1
 
+# activate virtual env: venv\Scripts\activate.bat
+
 # set variables in terminal:
 # set FLASK_APP=app.py
 # set FLASK_ENV=development
 
-# to start the app, run "python main.py" or "flask run" in your terminal
+# to start the app, run "python app.py" or "flask run" in your terminal
 
 
 app = Flask(__name__)
