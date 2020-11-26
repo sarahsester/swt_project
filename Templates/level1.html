@@ -42,7 +42,11 @@ Home Page
     <tr>
       {% for col, row_ in zip(column_names, row) %}
       {% if col == link_column %}
-      <td><button type="submit" value={{row_}}>{{ row_ }}</button></td>
+      <td>
+        <form method="POST">
+          <button name="somebodyLabel" type="submit" value={{row_}}>{{ row_ }}</button>
+        </form>
+      </td>
       {% else %}
       <td>{{row_}}</td>
       {% endif %}

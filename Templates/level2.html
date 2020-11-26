@@ -7,15 +7,31 @@ Home Page
 {% block content %}
 <main role="main" class="container">
   <h1 class="mt-5">Level 2</h1>
-  <p class="lead">You have entered the coordinates ({{latitude}}, {{longitude}}) and the radius {{radius}} km.</p>
+  <p class="lead">This page shows objects named after <strong>{{somebodys_name}}</strong> on a map and in a table. </p>
+
+  You have entered the coordinates ({{latitude}}, {{longitude}}).
 
   Change your current location:
   <form method="POST">
     <input name="latitude" type="text" placeholder="latitude" />
     <input name="longitude" type="text" placeholder="longitude" />
-    <input name="radius" type="text" placeholder="radius" />
+    <br>
+    <br>
+    Change the selected person:
+    <br>
+    <input name="somebody" type="text" placeholder="somebody" />
+    <input name="somebodys_name" type="text" placeholder="somebodys name" />
     <input type="submit" value="Go">
   </form>
+
+  <br>
+
+  Example: 49.49671, 8.47955, http://www.wikidata.org/entity/Q9554, Martin Luther
+
+  <br>
+  <br>
+
+  {{abstract}}
 
   <br>
   <br>
@@ -41,11 +57,7 @@ Home Page
     {% for row in row_data %}
     <tr>
       {% for col, row_ in zip(column_names, row) %}
-      {% if col == link_column %}
-      <td><button type="submit" value={{row_}}>{{ row_ }}</button></td>
-      {% else %}
       <td>{{row_}}</td>
-      {% endif %}
       {% endfor %}
     </tr>
     {% endfor %}
