@@ -1,5 +1,6 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session
 from flask_bootstrap import Bootstrap
+from flask_session import Session
 from SPARQL_queries import create_df_level1, create_map_level1
 from SPARQL_queries import create_df_level2, create_map_level2, create_abstract_level2
 
@@ -13,7 +14,9 @@ from SPARQL_queries import create_df_level2, create_map_level2, create_abstract_
 
 
 app = Flask(__name__, template_folder="./Templates")
-Bootstrap(app)
+SESSION_TYPE = 'filesystem'
+app.config.from_object(__name__)
+Session(app)
 
 
 @app.route("/")
@@ -24,8 +27,8 @@ def level1():
 @app.route("/", methods=['POST'])
 def level1_post():
     if "somebodyLabel" in request.form:
-        latitude = '49.49671'
-        longitude = '8.47955'
+        latitude = session["latitude"]
+        longitude = session["longitude"]
         somebody = request.form['somebodyLabel']
         df = create_df_level2(somebody, current_latitude=latitude, current_longitude=longitude)
         somebodys_name = df.loc[0, 'Person']
@@ -43,11 +46,14 @@ def level1_post():
                                zip=zip,
                                _map=_map)
     else:
-        latitude = request.form['latitude']
-        longitude = request.form['longitude']
-        radius = request.form['radius']
-        if radius == "":
-            radius = '10'
+        session["latitude"] = request.form['latitude']
+        session["longitude"] = request.form['longitude']
+        session["radius"] = request.form['radius']
+        if session["radius"] == "":
+            session["radius"] = '10'
+        latitude = session["latitude"]
+        longitude = session["longitude"]
+        radius = session["radius"]
         df = create_df_level1(latitude=latitude, longitude=longitude, radius=radius, limit='30')
         df.drop(['x'], axis=1, inplace=True)
         _map = create_map_level1(latitude=latitude, longitude=longitude, radius=radius, limit='30')
@@ -66,13 +72,17 @@ def level1_post():
 
 @app.route("/level2")
 def level2():
-    return render_template('level2.html')
+    latitude = session["latitude"]
+    longitude = session["longitude"]
+    return render_template('level2.html',
+                           latitude=latitude,
+                           longitude=longitude)
 
 
 @app.route("/level2", methods=['POST'])
 def level2_post():
-    latitude = request.form['latitude']
-    longitude = request.form['longitude']
+    latitude = session["latitude"]
+    longitude = session["longitude"]
     somebody = request.form['somebodyLabel']
     df = create_df_level2(somebody, current_latitude=latitude, current_longitude=longitude)
     somebodys_name = df.loc[0, 'Person']
