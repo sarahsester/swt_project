@@ -17,45 +17,20 @@ Bootstrap(app)
 
 
 @app.route("/")
-def index():
-    return render_template('index.html')
-
-
-@app.route('/', methods=['POST'])
-def index_post():
-    latitude = request.form['latitude']
-    longitude = request.form['longitude']
-    radius = request.form['radius']
-    if radius == "":
-        radius = '10'
-    df = create_df_level1(latitude=latitude, longitude=longitude, radius=radius, limit='30')
-    _map = create_map_level1(latitude=latitude, longitude=longitude, radius=radius, limit='30')
-    return render_template('level1.html',
-                           latitude=latitude,
-                           longitude=longitude,
-                           radius=radius,
-                           column_names=df.columns.values,
-                           row_data=list(df.values.tolist()),
-                           link_column="somebody",
-                           zip=zip,
-                           _map=_map)
-
-
-@app.route("/level1")
 def level1():
     return render_template('level1.html')
 
 
-@app.route("/level1", methods=['POST'])
+@app.route("/", methods=['POST'])
 def level1_post():
     if "somebodyLabel" in request.form:
-        latitude = 49.49671
-        longitude = 8.47955
+        latitude = '49.49671'
+        longitude = '8.47955'
         somebody = request.form['somebodyLabel']
         df = create_df_level2(somebody, current_latitude=latitude, current_longitude=longitude)
-        somebodys_name = df.loc[0, "somebodyLabel"]
+        somebodys_name = df.loc[0, 'Person']
+        df.drop(['x', 'Person'], axis=1, inplace=True)
         abstract = create_abstract_level2(somebody, somebodys_name)
-
         _map = create_map_level2(somebody)
         return render_template('level2.html',
                                latitude=latitude,
@@ -74,14 +49,17 @@ def level1_post():
         if radius == "":
             radius = '10'
         df = create_df_level1(latitude=latitude, longitude=longitude, radius=radius, limit='30')
+        df.drop(['x'], axis=1, inplace=True)
         _map = create_map_level1(latitude=latitude, longitude=longitude, radius=radius, limit='30')
         return render_template('level1.html',
                                latitude=latitude,
                                longitude=longitude,
                                radius=radius,
+                               string="You have entered the coordinates (" + latitude + ", " + longitude
+                                      + ") and the radius " + radius + " km.",
                                column_names=df.columns.values,
                                row_data=list(df.values.tolist()),
-                               link_column="somebody",
+                               link_column="Further Results",
                                zip=zip,
                                _map=_map)
 
@@ -95,10 +73,11 @@ def level2():
 def level2_post():
     latitude = request.form['latitude']
     longitude = request.form['longitude']
-    somebody = request.form['somebody']
-    somebodys_name = request.form['somebodys_name']
-    abstract = create_abstract_level2(somebody, somebodys_name)
+    somebody = request.form['somebodyLabel']
     df = create_df_level2(somebody, current_latitude=latitude, current_longitude=longitude)
+    somebodys_name = df.loc[0, 'Person']
+    df.drop(['x', 'Person'], axis=1, inplace=True)
+    abstract = create_abstract_level2(somebody, somebodys_name)
     _map = create_map_level2(somebody)
     return render_template('level2.html',
                            latitude=latitude,

@@ -6,19 +6,22 @@ Home Page
 
 {% block content %}
 <main role="main" class="container">
-  <h1 class="mt-5">Level 1</h1>
-  <p class="lead">You have entered the coordinates ({{latitude}}, {{longitude}}) and the radius {{radius}} km.</p>
-
-  Change your current location:
+  <h1 class="mt-5">Location App Showing Objects Named After People</h1>
+  <br>
+  <br>
+  <p class="lead">Insert your current location:</p>
   <form method="POST">
     <input name="latitude" type="text" placeholder="latitude" />
     <input name="longitude" type="text" placeholder="longitude" />
-    <input name="radius" type="text" placeholder="radius" />
+    <input name="radius" type="text" placeholder="radius (km)" />
     <input type="submit" value="Go">
   </form>
-
   <br>
+  Note: Latitudes range from -90 to 90. Longitudes range from -180 to 80.<br>
+  Currently only locations within Germany are supported. Default value for radius is 10 km.<br>
+  Example: Mannheim has the coordinates (49.49671, 8.47955).<br>
   <br>
+  <p class="lead"><strong>{{string}}</strong></p><br>
 
   <iframe style="width: 100%; height: 50vh; border: none;"
           src="{{_map}}"
@@ -44,7 +47,7 @@ Home Page
       {% if col == link_column %}
       <td>
         <form method="POST">
-          <button name="somebodyLabel" type="submit" value={{row_}}>{{ row_ }}</button>
+          <button name="somebodyLabel" type="submit" value={{row_}}> Go </button>
         </form>
       </td>
       {% else %}

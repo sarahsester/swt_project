@@ -13,13 +13,13 @@ def create_df_level1(latitude='49.487777777', longitude='8.466111111', radius='1
         prefix wikibase: <http://wikiba.se/ontology#>
 
 
-        SELECT ?xLabel ?x ?somebodyLabel ?somebody ?otherLocation 
-               (GROUP_CONCAT(?classLabel; separator=', ') AS ?classdescription)
+        SELECT ?xLabel ?x ?somebodyLabel ?somebody ?Location 
+               (GROUP_CONCAT(?classLabel; separator=', ') AS ?Description)         
         WHERE
         {{
           BIND('Point({longitude} {latitude})'^^geo:wktLiteral AS ?currentLocation).
           SERVICE wikibase:around {{
-              ?x wdt:P625 ?otherLocation. 
+              ?x wdt:P625 ?Location. 
               bd:serviceParam wikibase:center ?currentLocation. 
               bd:serviceParam wikibase:radius '{radius}'. 
           }}
@@ -40,7 +40,7 @@ def create_df_level1(latitude='49.487777777', longitude='8.466111111', radius='1
           SERVICE wikibase:label {{ bd:serviceParam wikibase:language "de". }} 
           
         }} 
-        GROUP BY ?xLabel ?x ?somebodyLabel ?somebody ?otherLocation
+        GROUP BY ?xLabel ?x ?somebodyLabel ?somebody ?Location
         LIMIT {limit}
         '''.format(longitude=longitude, latitude=latitude, radius=radius, limit=limit)
 
@@ -56,10 +56,15 @@ def create_df_level1(latitude='49.487777777', longitude='8.466111111', radius='1
         df[col] = df[col].apply(lambda x: x['value'])
 
     # Compute distance and sort according to distance
-    df['distance'] = df['otherLocation'].apply(lambda point: compute_distance(new_point=point,
+    df['Distance (km)'] = df['Location'].apply(lambda point: compute_distance(new_point=point,
                                                                               current_longitude=longitude,
                                                                               current_latitude=latitude))
-    df = df.sort_values(by=['distance'])
+    # Sort according to distance
+    df.sort_values(by=['Distance (km)'], inplace=True)
+
+    # Rename columns
+    df.rename(columns={"xLabel": "Object", "somebodyLabel": "Person", "somebody": "Further Results",
+                       "Location": "Object Location"}, inplace=True)
 
     return df
 
@@ -115,7 +120,7 @@ def create_df_level2(somebody, current_latitude, current_longitude):
 
 
         SELECT ?x ?xLabel ?somebodyLabel ?Location ?countryLabel
-            (GROUP_CONCAT(?classLabel; separator=', ') AS ?classdescription)
+            (GROUP_CONCAT(?classLabel; separator=', ') AS ?Description)
 
         WHERE {{
           # x is named after
@@ -159,13 +164,17 @@ def create_df_level2(somebody, current_latitude, current_longitude):
     for col in df.columns:
         df[col] = df[col].apply(lambda x: x['value'])
 
-    # compute distance
-    df['distance'] = df['Location'].apply(lambda point: compute_distance(new_point=point,
-                                                                         current_longitude=current_longitude,
-                                                                         current_latitude=current_latitude))
+    # Compute distance
+    df['Distance (km)'] = df['Location'].apply(lambda point: compute_distance(new_point=point,
+                                                                              current_longitude=current_longitude,
+                                                                              current_latitude=current_latitude))
 
     # Sort according to distance
-    df = df.sort_values(by=['distance'])
+    df.sort_values(by=['Distance (km)'], inplace=True)
+
+    # Rename columns
+    df.rename(columns={"xLabel": "Object", "somebodyLabel": "Person", "countryLabel": "Country",
+                       "Location": "Object Location"}, inplace=True)
 
     return df
 
@@ -180,6 +189,5 @@ def create_map_level2(somebody):
 def compute_distance(new_point, current_longitude, current_latitude):
     new_location = np.array([float(x) for x in new_point[6:-1].split(' ')][::-1])
     current_location = np.array([float(current_longitude), float(current_latitude)][::-1])
-    distance = hs.haversine(new_location, current_location)
+    distance = round(hs.haversine(new_location, current_location), 2)
     return distance
-
