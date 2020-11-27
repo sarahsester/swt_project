@@ -2,7 +2,6 @@ from flask import Flask, request, render_template
 from flask_bootstrap import Bootstrap
 from SPARQL_queries import create_df_level1, create_map_level1
 from SPARQL_queries import create_df_level2, create_map_level2, create_abstract_level2
-from SPARQL_queries import get_somebodys_name
 
 # activate virtual env: venv\Scripts\activate.bat
 
@@ -53,9 +52,10 @@ def level1_post():
         latitude = 49.49671
         longitude = 8.47955
         somebody = request.form['somebodyLabel']
-        somebodys_name = get_somebodys_name(somebody)
-        abstract = create_abstract_level2(somebody, somebodys_name)
         df = create_df_level2(somebody, current_latitude=latitude, current_longitude=longitude)
+        somebodys_name = df.loc[0, "somebodyLabel"]
+        abstract = create_abstract_level2(somebody, somebodys_name)
+
         _map = create_map_level2(somebody)
         return render_template('level2.html',
                                latitude=latitude,

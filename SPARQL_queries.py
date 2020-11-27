@@ -114,7 +114,7 @@ def create_df_level2(somebody, current_latitude, current_longitude):
         prefix wikibase: <http://wikiba.se/ontology#>
 
 
-        SELECT ?x ?xLabel ?Location ?countryLabel
+        SELECT ?x ?xLabel ?somebodyLabel ?Location ?countryLabel
             (GROUP_CONCAT(?classLabel; separator=', ') AS ?classdescription)
 
         WHERE {{
@@ -126,6 +126,9 @@ def create_df_level2(somebody, current_latitude, current_longitude):
 
           # which Class is x (e.g. Street, church)
              wdt:P31  ?class . 
+          
+          # get somebodys name (needed to display name on top of level 2)
+          ?x wdt:P138 ?somebody.
 
           # the class has a german label 
           ?class rdfs:label ?classLabel .
@@ -139,7 +142,7 @@ def create_df_level2(somebody, current_latitude, current_longitude):
           SERVICE wikibase:label {{ bd:serviceParam wikibase:language "de". }}
 
         }}
-        GROUP BY ?x ?xLabel ?Location ?countryLabel
+        GROUP BY ?x ?xLabel ?somebodyLabel ?Location ?countryLabel
         LIMIT 1000
 
     '''.format(somebody=somebody)
@@ -179,8 +182,4 @@ def compute_distance(new_point, current_longitude, current_latitude):
     current_location = np.array([float(current_longitude), float(current_latitude)][::-1])
     distance = hs.haversine(new_location, current_location)
     return distance
-
-def get_somebodys_name(somebody):
-    somebodys_name = "TO DO"
-    return somebodys_name
 
