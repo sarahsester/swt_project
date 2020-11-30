@@ -6,21 +6,25 @@ Home Page
 
 {% block content %}
 <main role="main" class="container">
-  <h1 class="mt-5">Level 1</h1>
-  <p class="lead">You have entered the coordinates ({{latitude}}, {{longitude}}) and the radius {{radius}} km.</p>
-
-  Change your current location:
+  <h1 class="mt-5">Location App Showing Objects Named After People</h1>
+  <h2 class="mt-5">Object Search</h2>
+  <br>
+  <p class="lead">This page shows objects named after people in Germany, Austria, and Switzerland. </p>
+  Insert your current location:
   <form method="POST">
     <input name="latitude" type="text" placeholder="latitude" />
     <input name="longitude" type="text" placeholder="longitude" />
-    <input name="radius" type="text" placeholder="radius" />
+    <input name="radius" type="text" placeholder="radius (km)" />
     <input type="submit" value="Go">
   </form>
-
   <br>
+  Note: Latitudes range from -90 to 90. Longitudes range from -180 to 80.<br>
+  Currently only locations within Germany are supported. Default value for radius is 10 km.<br>
+  Example: Mannheim has the coordinates (49.49671, 8.47955).<br>
   <br>
+  <p class="lead"><strong>{{string}}</strong></p><br>
 
-  <iframe style="width: 80vw; height: 50vh; border: none;"
+  <iframe style="width: 100%; height: 50vh; border: none;"
           src="{{_map}}"
           referrerpolicy="origin"
           sandbox="allow-scripts allow-same-origin allow-popups">
@@ -42,7 +46,11 @@ Home Page
     <tr>
       {% for col, row_ in zip(column_names, row) %}
       {% if col == link_column %}
-      <td><button type="submit" value={{row_}}>{{ row_ }}</button></td>
+      <td>
+        <form method="POST">
+          <button name="somebodyLabel" type="submit" value={{row_}}> Go </button>
+        </form>
+      </td>
       {% else %}
       <td>{{row_}}</td>
       {% endif %}
@@ -51,7 +59,12 @@ Home Page
     {% endfor %}
     </tbody>
   </table>
-
-
 </main>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
 {% endblock %}

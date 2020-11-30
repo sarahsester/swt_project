@@ -6,21 +6,34 @@ Home Page
 
 {% block content %}
 <main role="main" class="container">
-  <h1 class="mt-5">Level 2</h1>
-  <p class="lead">You have entered the coordinates ({{latitude}}, {{longitude}}) and the radius {{radius}} km.</p>
-
-  Change your current location:
+  <h1 class="mt-5">Location App Showing Objects Named After People</h1>
+  <h2 class="mt-5">Person Search</h2>
+  <br>
+  <p class="lead">This page shows objects named after <strong>{{somebodys_name}}</strong>
+    in Germany, Austria, and Switzerland. </p>
+  You have entered the coordinates ({{latitude}}, {{longitude}}).<br>
+  <br>
+  Change your current location or the selected person:
   <form method="POST">
     <input name="latitude" type="text" placeholder="latitude" />
     <input name="longitude" type="text" placeholder="longitude" />
-    <input name="radius" type="text" placeholder="radius" />
+    <input name="somebodyLabel" type="text" placeholder="somebody" />
     <input type="submit" value="Go">
   </form>
 
   <br>
+
+  Example: http://www.wikidata.org/entity/Q9554, Martin Luther
+
+  <br>
   <br>
 
-  <iframe style="width: 80vw; height: 50vh; border: none;"
+  {{abstract}}
+
+  <br>
+  <br>
+
+  <iframe style="width: 100%; height: 50vh; border: none;"
           src="{{_map}}"
           referrerpolicy="origin"
           sandbox="allow-scripts allow-same-origin allow-popups">
@@ -41,17 +54,19 @@ Home Page
     {% for row in row_data %}
     <tr>
       {% for col, row_ in zip(column_names, row) %}
-      {% if col == link_column %}
-      <td><button type="submit" value={{row_}}>{{ row_ }}</button></td>
-      {% else %}
       <td>{{row_}}</td>
-      {% endif %}
       {% endfor %}
     </tr>
     {% endfor %}
     </tbody>
   </table>
 
-
 </main>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
 {% endblock %}
