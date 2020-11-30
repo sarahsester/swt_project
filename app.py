@@ -77,8 +77,12 @@ def level1_post():
 
 @app.route("/level2")
 def level2():
-    latitude = session['latitude']
-    longitude = session['longitude']
+    try:
+        latitude = session['latitude']
+        longitude = session['longitude']
+    except:
+        latitude = ""
+        longitude = ""
     somebodys_name = "somebody"
     return render_template('level2.html',
                            latitude=latitude,
