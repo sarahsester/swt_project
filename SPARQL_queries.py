@@ -4,7 +4,7 @@ import haversine as hs
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
-def create_df_level1(latitude='49.487777777', longitude='8.466111111', radius='15', limit='30'):
+def create_df_level1(latitude, longitude, radius, limit):
     query = '''
         prefix bd:       <http://www.bigdata.com/rdf#>
         prefix geo:      <http://www.opengis.net/ont/geosparql#>
@@ -46,7 +46,7 @@ def create_df_level1(latitude='49.487777777', longitude='8.466111111', radius='1
 
     # Initializing SPARQL Wrapper and querying
     endpoint = 'https://query.wikidata.org/sparql'
-    sparql = SPARQLWrapper(endpoint)
+    sparql = SPARQLWrapper(endpoint, agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
@@ -69,11 +69,11 @@ def create_df_level1(latitude='49.487777777', longitude='8.466111111', radius='1
     return df
 
 
-def create_map_level1(latitude='49.487777777', longitude='8.466111111', radius='15', limit='30'):
-    map = '''https://query.wikidata.org/embed.html#%23defaultView%3AMap%0A%20%20%20%20%20%20%20%20prefix%20bd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.bigdata.com%2Frdf%23%3E%0A%20%20%20%20%20%20%20%20prefix%20geo%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.opengis.net%2Font%2Fgeosparql%23%3E%0A%20%20%20%20%20%20%20%20prefix%20wd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0A%20%20%20%20%20%20%20%20prefix%20wdt%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0A%20%20%20%20%20%20%20%20prefix%20wikibase%3A%20%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0A%0A%0A%20%20%20%20%20%20%20%20SELECT%20%3FxLabel%20%3Fx%20%3FsomebodyLabel%20%3Fsomebody%20%3FotherLocation%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20(GROUP_CONCAT(%3FclassLabel%3B%20separator%3D'%2C%20')%20AS%20%3Fclassdescription)%0A%20%20%20%20%20%20%20%20WHERE%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20BIND('Point({longitude}%20{latitude})'%5E%5Egeo%3AwktLiteral%20AS%20%3FcurrentLocation).%0A%20%20%20%20%20%20%20%20%20%20SERVICE%20wikibase%3Aaround%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Fx%20wdt%3AP625%20%3FotherLocation.%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20bd%3AserviceParam%20wikibase%3Acenter%20%3FcurrentLocation.%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20bd%3AserviceParam%20wikibase%3Aradius%20'{radius}'.%20%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%23%20x%20is%20named%20after%0A%20%20%20%20%20%20%20%20%20%20%3Fx%20wdt%3AP138%20%3Fsomebody%20.%0A%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%23%20that%20somebody%20is%20a%20human%0A%20%20%20%20%20%20%20%20%20%20%3Fsomebody%20wdt%3AP31%20wd%3AQ5%20.%0A%0A%20%20%20%20%20%20%20%20%20%20%23%20which%20Class%20is%20x%20(e.g.%20Street%2C%20church)%0A%20%20%20%20%20%20%20%20%20%20%3Fx%20wdt%3AP31%20%20%3Fclass%20.%20%0A%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%23%20the%20class%20has%20a%20german%20label%20%0A%20%20%20%20%20%20%20%20%20%20%3Fclass%20rdfs%3Alabel%20%3FclassLabel%20.%0A%20%20%20%20%20%20%20%20%20%20FILTER(%20lang(%3FclassLabel)%20%3D%20%22de%22%20)%0A%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%23%20Retrieve%20Labels%0A%20%20%20%20%20%20%20%20%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22de%22.%20%7D%20%0A%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%7D%20%0A%20%20%20%20%20%20%20%20GROUP%20BY%20%3FxLabel%20%3Fx%20%3FsomebodyLabel%20%3Fsomebody%20%3FotherLocation%0A%20%20%20%20%20%20%20%20LIMIT%20{limit}%0A%20%20%20%20%20%20%20%20'''.format(
+def create_map_level1(latitude, longitude, radius, limit):
+    map_ = '''https://query.wikidata.org/embed.html#%23defaultView%3AMap%0A%20%20%20%20%20%20%20%20prefix%20bd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.bigdata.com%2Frdf%23%3E%0A%20%20%20%20%20%20%20%20prefix%20geo%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.opengis.net%2Font%2Fgeosparql%23%3E%0A%20%20%20%20%20%20%20%20prefix%20wd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0A%20%20%20%20%20%20%20%20prefix%20wdt%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0A%20%20%20%20%20%20%20%20prefix%20wikibase%3A%20%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0A%0A%0A%20%20%20%20%20%20%20%20SELECT%20%3FxLabel%20%3Fx%20%3FsomebodyLabel%20%3Fsomebody%20%3FotherLocation%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20(GROUP_CONCAT(%3FclassLabel%3B%20separator%3D'%2C%20')%20AS%20%3Fclassdescription)%0A%20%20%20%20%20%20%20%20WHERE%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20BIND('Point({longitude}%20{latitude})'%5E%5Egeo%3AwktLiteral%20AS%20%3FcurrentLocation).%0A%20%20%20%20%20%20%20%20%20%20SERVICE%20wikibase%3Aaround%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%3Fx%20wdt%3AP625%20%3FotherLocation.%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20bd%3AserviceParam%20wikibase%3Acenter%20%3FcurrentLocation.%20%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20bd%3AserviceParam%20wikibase%3Aradius%20'{radius}'.%20%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%23%20x%20is%20named%20after%0A%20%20%20%20%20%20%20%20%20%20%3Fx%20wdt%3AP138%20%3Fsomebody%20.%0A%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%23%20that%20somebody%20is%20a%20human%0A%20%20%20%20%20%20%20%20%20%20%3Fsomebody%20wdt%3AP31%20wd%3AQ5%20.%0A%0A%20%20%20%20%20%20%20%20%20%20%23%20which%20Class%20is%20x%20(e.g.%20Street%2C%20church)%0A%20%20%20%20%20%20%20%20%20%20%3Fx%20wdt%3AP31%20%20%3Fclass%20.%20%0A%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%23%20the%20class%20has%20a%20german%20label%20%0A%20%20%20%20%20%20%20%20%20%20%3Fclass%20rdfs%3Alabel%20%3FclassLabel%20.%0A%20%20%20%20%20%20%20%20%20%20FILTER(%20lang(%3FclassLabel)%20%3D%20%22de%22%20)%0A%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%20%20%23%20Retrieve%20Labels%0A%20%20%20%20%20%20%20%20%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22de%22.%20%7D%20%0A%20%20%20%20%20%20%20%20%20%20%0A%20%20%20%20%20%20%20%20%7D%20%0A%20%20%20%20%20%20%20%20GROUP%20BY%20%3FxLabel%20%3Fx%20%3FsomebodyLabel%20%3Fsomebody%20%3FotherLocation%0A%20%20%20%20%20%20%20%20LIMIT%20{limit}%0A%20%20%20%20%20%20%20%20'''.format(
         longitude=longitude, latitude=latitude, radius=radius, limit=limit)
 
-    return map
+    return map_
 
 
 def create_abstract_level2(somebody, somebodys_name):
@@ -97,7 +97,7 @@ def create_abstract_level2(somebody, somebodys_name):
 
     # Initializing SPARQL Wrapper and querying
     endpoint = 'http://dbpedia.org/sparql'
-    sparql = SPARQLWrapper(endpoint)
+    sparql = SPARQLWrapper(endpoint, agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     result = sparql.query().convert()
@@ -154,7 +154,7 @@ def create_df_level2(somebody, current_latitude, current_longitude):
 
     # Initializing SPARQL Wrapper and querying
     endpoint = 'https://query.wikidata.org/sparql'
-    sparql = SPARQLWrapper(endpoint)
+    sparql = SPARQLWrapper(endpoint, agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
@@ -180,10 +180,10 @@ def create_df_level2(somebody, current_latitude, current_longitude):
 
 
 def create_map_level2(somebody):
-    map = '''https://query.wikidata.org/embed.html#%20%20%20%20%23defaultView%3AMap%0A%20%20%20%20prefix%20bd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.bigdata.com%2Frdf%23%3E%0A%20%20%20%20prefix%20wd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0A%20%20%20%20prefix%20wdt%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0A%20%20%20%20prefix%20wikibase%3A%20%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0A%0A%0A%20%20%20%20SELECT%20%3Fx%20%3FxLabel%20%3FLocation%20%3FcountryLabel%0A%20%20%20%20%20%20%20%20(GROUP_CONCAT(%3FclassLabel%3B%20separator%3D'%2C%20')%20AS%20%3Fclassdescription)%0A%0A%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%23%20x%20is%20named%20after%0A%20%20%20%20%20%20%3Fx%20wdt%3AP138%20<{somebody}>%20%3B%0A%0A%20%20%20%20%20%20%23%20x%20has%20location%0A%20%20%20%20%20%20%20%20%20wdt%3AP625%20%3FLocation%20%3B%0A%0A%20%20%20%20%20%20%23%20which%20Class%20is%20x%20(e.g.%20Street%2C%20church)%0A%20%20%20%20%20%20%20%20%20wdt%3AP31%20%20%3Fclass%20.%20%0A%0A%20%20%20%20%20%20%23%20the%20class%20has%20a%20german%20label%20%0A%20%20%20%20%20%20%3Fclass%20rdfs%3Alabel%20%3FclassLabel%20.%0A%20%20%20%20%20%20FILTER%20(%20lang(%3FclassLabel)%20%3D%20%22de%22%20)%0A%0A%20%20%20%20%20%20%23%20located%20in%20Germany%2C%20Austria%2C%20or%20Switzerland%0A%20%20%20%20%20%20%3Fx%20wdt%3AP17%20%3Fcountry%20.%0A%20%20%20%20%20%20FILTER%20(%20%3Fcountry%20%3D%20wd%3AQ39%20%7C%7C%20%3Fcountry%20%3D%20wd%3AQ40%20%7C%7C%20%3Fcountry%20%3D%20wd%3AQ183%20)%0A%0A%20%20%20%20%20%20%23%20Retrieve%20Labels%0A%20%20%20%20%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22de%22.%20%7D%0A%0A%20%20%20%20%7D%0A%20%20%20%20GROUP%20BY%20%3Fx%20%3FxLabel%20%3FLocation%20%3FcountryLabel%0A%20%20%20%20LIMIT%201000'''.format(
+    map_ = '''https://query.wikidata.org/embed.html#%20%20%20%20%23defaultView%3AMap%0A%20%20%20%20prefix%20bd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.bigdata.com%2Frdf%23%3E%0A%20%20%20%20prefix%20wd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0A%20%20%20%20prefix%20wdt%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0A%20%20%20%20prefix%20wikibase%3A%20%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0A%0A%0A%20%20%20%20SELECT%20%3Fx%20%3FxLabel%20%3FLocation%20%3FcountryLabel%0A%20%20%20%20%20%20%20%20(GROUP_CONCAT(%3FclassLabel%3B%20separator%3D'%2C%20')%20AS%20%3Fclassdescription)%0A%0A%20%20%20%20WHERE%20%7B%0A%20%20%20%20%20%20%23%20x%20is%20named%20after%0A%20%20%20%20%20%20%3Fx%20wdt%3AP138%20<{somebody}>%20%3B%0A%0A%20%20%20%20%20%20%23%20x%20has%20location%0A%20%20%20%20%20%20%20%20%20wdt%3AP625%20%3FLocation%20%3B%0A%0A%20%20%20%20%20%20%23%20which%20Class%20is%20x%20(e.g.%20Street%2C%20church)%0A%20%20%20%20%20%20%20%20%20wdt%3AP31%20%20%3Fclass%20.%20%0A%0A%20%20%20%20%20%20%23%20the%20class%20has%20a%20german%20label%20%0A%20%20%20%20%20%20%3Fclass%20rdfs%3Alabel%20%3FclassLabel%20.%0A%20%20%20%20%20%20FILTER%20(%20lang(%3FclassLabel)%20%3D%20%22de%22%20)%0A%0A%20%20%20%20%20%20%23%20located%20in%20Germany%2C%20Austria%2C%20or%20Switzerland%0A%20%20%20%20%20%20%3Fx%20wdt%3AP17%20%3Fcountry%20.%0A%20%20%20%20%20%20FILTER%20(%20%3Fcountry%20%3D%20wd%3AQ39%20%7C%7C%20%3Fcountry%20%3D%20wd%3AQ40%20%7C%7C%20%3Fcountry%20%3D%20wd%3AQ183%20)%0A%0A%20%20%20%20%20%20%23%20Retrieve%20Labels%0A%20%20%20%20%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22de%22.%20%7D%0A%0A%20%20%20%20%7D%0A%20%20%20%20GROUP%20BY%20%3Fx%20%3FxLabel%20%3FLocation%20%3FcountryLabel%0A%20%20%20%20LIMIT%201000'''.format(
         somebody=somebody)
 
-    return map
+    return map_
 
 
 def compute_distance(new_point, current_longitude, current_latitude):

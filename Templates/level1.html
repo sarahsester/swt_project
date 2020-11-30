@@ -7,9 +7,10 @@ Home Page
 {% block content %}
 <main role="main" class="container">
   <h1 class="mt-5">Location App Showing Objects Named After People</h1>
+  <h2 class="mt-5">Object Search</h2>
   <br>
-  <br>
-  <p class="lead">Insert your current location:</p>
+  <p class="lead">This page shows objects named after people in Germany, Austria, and Switzerland. </p>
+  Insert your current location:
   <form method="POST">
     <input name="latitude" type="text" placeholder="latitude" />
     <input name="longitude" type="text" placeholder="longitude" />
@@ -58,7 +59,12 @@ Home Page
     {% endfor %}
     </tbody>
   </table>
-
-
 </main>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
 {% endblock %}

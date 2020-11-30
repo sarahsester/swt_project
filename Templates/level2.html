@@ -6,15 +6,18 @@ Home Page
 
 {% block content %}
 <main role="main" class="container">
-  <h1 class="mt-5">Person Search</h1>
+  <h1 class="mt-5">Location App Showing Objects Named After People</h1>
+  <h2 class="mt-5">Person Search</h2>
+  <br>
   <p class="lead">This page shows objects named after <strong>{{somebodys_name}}</strong>
     in Germany, Austria, and Switzerland. </p>
-
   You have entered the coordinates ({{latitude}}, {{longitude}}).<br>
   <br>
-  Change the selected person:
+  Change your current location or the selected person:
   <form method="POST">
-    <input name="somebodyLabel" type="text" placeholder="person" />
+    <input name="latitude" type="text" placeholder="latitude" />
+    <input name="longitude" type="text" placeholder="longitude" />
+    <input name="somebodyLabel" type="text" placeholder="somebody" />
     <input type="submit" value="Go">
   </form>
 
@@ -58,6 +61,12 @@ Home Page
     </tbody>
   </table>
 
-
 </main>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
 {% endblock %}
