@@ -225,10 +225,8 @@ def create_abstract_level2_name(somebodys_name):
         # Appending names an their comments in case of several results
         abstract = ''
         for res in result['results']['bindings']:
-            abstract += res['name']['value']
-            abstract += ':\n'
-            abstract += res['comment']['value']
-            abstract += '\n\n'
+            abstract += res['name']['value'] + ":<br>"
+            abstract += res['comment']['value'] + "<br><br>"
 
     # Trying to retrieve the comment. In case there is none or the person was not found. Return the error message.
     else:
@@ -298,15 +296,15 @@ def create_df_level2_name(somebodys_name, current_latitude, current_longitude):
     df.sort_values(by=['Distance (km)'], inplace=True)
 
     # Rename columns
-    df.rename(columns={"xLabel": "Object", "somebodyLabel": "Person", "countryLabel": "Country",
-                       "Location": "Object Location"}, inplace=True)
+    df.rename(columns={"xLabel": "Object", "countryLabel": "Country", "Location": "Object Location",
+                       "classdescription": "Description"}, inplace=True)
 
     return df
 
 
 def create_map_level2_name(somebodys_name):
-    map_ = '''<iframe style="width: 80vw; height: 50vh; border: none;" src="https://query.wikidata.org/embed.html#%23defaultView%3AMap%0Aprefix%20bd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.bigdata.com%2Frdf%23%3E%0Aprefix%20wd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0Aprefix%20wdt%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0Aprefix%20wikibase%3A%20%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0A%0A%0ASELECT%20%20%3Fx%20%3FxLabel%20%3FLocation%20%3FcountryLabel%0A(GROUP_CONCAT%20(DISTINCT%20%3FclassLabel%3B%20separator%3D'%2C%20')%20AS%20%3Fclassdescription)%0A%0AWHERE%20%7B%0A%20%20%3Fs%20wdt%3AP31%20wd%3AQ5%20%3B%0A%20%20%20%20%20rdfs%3Alabel%20%3FsLabel%20.%0A%20%20FILTER%20(regex(%3FsLabel%2C%20%22{somebodysName}%22)%20)%20%0A%0A%20%20%23%20x%20is%20named%20after%0A%20%20%3Fx%20wdt%3AP138%20%3Fs%20%3B%0A%0A%20%20%20%20%20%23%20x%20has%20location%0A%20%20%20%20%20wdt%3AP625%20%3FLocation%20%3B%0A%0A%20%20%20%20%20%23%20which%20Class%20is%20x%20(e.g.%20Street%2C%20church)%0A%20%20%20%20%20wdt%3AP31%20%20%3Fclass%20.%20%0A%0A%20%20%23%20the%20class%20has%20a%20german%20label%20%0A%20%20%3Fclass%20rdfs%3Alabel%20%3FclassLabel%20.%0A%20%20FILTER%20(%20lang(%3FclassLabel)%20%3D%20%22en%22%20)%0A%0A%20%20%23%20located%20in%20Germany%2C%20Austria%2C%20or%20Switzerland%0A%20%20%3Fx%20wdt%3AP17%20%3Fcountry%20.%0A%20%20FILTER%20(%20%3Fcountry%20%3D%20wd%3AQ39%20%7C%7C%20%3Fcountry%20%3D%20wd%3AQ40%20%7C%7C%20%3Fcountry%20%3D%20wd%3AQ183%20)%0A%0A%20%20%23%20Retrieve%20Labels%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22en%22.%20%7D%0A%0A%7D%0AGROUP%20BY%20%3Fx%20%3FxLabel%20%3FLocation%20%3FcountryLabel%0ALIMIT%201000" referrerpolicy="origin" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
-        '''.format(somebodysName=somebodys_name)
+    map_ = '''https://query.wikidata.org/embed.html#%23defaultView%3AMap%0Aprefix%20bd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.bigdata.com%2Frdf%23%3E%0Aprefix%20wd%3A%20%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fentity%2F%3E%0Aprefix%20wdt%3A%20%20%20%20%20%20%3Chttp%3A%2F%2Fwww.wikidata.org%2Fprop%2Fdirect%2F%3E%0Aprefix%20wikibase%3A%20%3Chttp%3A%2F%2Fwikiba.se%2Fontology%23%3E%0A%0A%0ASELECT%20%3Fx%20%3FxLabel%20%3FLocation%20%3FcountryLabel%0A(GROUP_CONCAT%20(DISTINCT%20%3FclassLabel%3B%20separator%3D'%2C%20')%20AS%20%3Fclassdescription)%0A%0AWHERE%20%7B%0A%20%20%3Fs%20wdt%3AP31%20wd%3AQ5%20%3B%0A%20%20%20%20%20rdfs%3Alabel%20%3FsLabel%20.%0A%20%20FILTER%20(regex(%3FsLabel%2C%20%22{somebodysName}%22)%20)%20%0A%20%20%0A%20%20%23%20x%20is%20named%20after%0A%20%20%3Fx%20wdt%3AP138%20%3Fs%20%3B%0A%0A%20%20%20%20%20%23%20x%20has%20location%0A%20%20%20%20%20wdt%3AP625%20%3FLocation%20%3B%0A%0A%20%20%20%20%20%23%20which%20Class%20is%20x%20(e.g.%20Street%2C%20church)%0A%20%20%20%20%20wdt%3AP31%20%20%3Fclass%20.%20%0A%0A%20%20%23%20the%20class%20has%20a%20german%20label%20%0A%20%20%3Fclass%20rdfs%3Alabel%20%3FclassLabel%20.%0A%20%20FILTER%20(%20lang(%3FclassLabel)%20%3D%20%22de%22%20)%0A%0A%20%20%23%20located%20in%20Germany%2C%20Austria%2C%20or%20Switzerland%0A%20%20%3Fx%20wdt%3AP17%20%3Fcountry%20.%0A%20%20FILTER%20(%20%3Fcountry%20%3D%20wd%3AQ39%20%7C%7C%20%3Fcountry%20%3D%20wd%3AQ40%20%7C%7C%20%3Fcountry%20%3D%20wd%3AQ183%20)%0A%0A%20%20%23%20Retrieve%20Labels%0A%20%20SERVICE%20wikibase%3Alabel%20%7B%20bd%3AserviceParam%20wikibase%3Alanguage%20%22de%22.%20%7D%0A%0A%7D%0AGROUP%20BY%20%3Fx%20%3FxLabel%20%3FLocation%20%3FcountryLabel%0ALIMIT%201000'''.format(
+        somebodysName=somebodys_name)
 
     return map_
 
