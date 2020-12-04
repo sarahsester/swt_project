@@ -1,7 +1,8 @@
 from flask import Flask, request, render_template, session
 from flask_session import Session
 from SPARQL_queries import create_df_level1, create_map_level1
-from SPARQL_queries import create_df_level2, create_map_level2, create_abstract_level2
+from SPARQL_queries import create_df_level2_label, create_map_level2_label, create_abstract_level2_label
+from SPARQL_queries import create_df_level2_name, create_map_level2_name, create_abstract_level2_name
 
 # activate virtual env: venv\Scripts\activate.bat
 
@@ -25,25 +26,35 @@ def level1():
 
 @app.route("/", methods=['POST'])
 def level1_post():
-    if "somebodyLabel" in request.form:
+    if "somebodys_label" in request.form:
         if "latitude" in request.form and request.form['latitude'] != "":
             session['latitude'] = request.form['latitude']
         if "longitude" in request.form and request.form['longitude'] != "":
             session['longitude'] = request.form['longitude']
-        if request.form['somebodyLabel'] != "":
-            session['somebodyLabel'] = request.form['somebodyLabel']
-        latitude = session['latitude']
-        longitude = session['longitude']
-        somebody = session['somebodyLabel']
-        df = create_df_level2(somebody, current_latitude=latitude, current_longitude=longitude)
-        somebodys_name = df.loc[0, 'Person']
-        df.drop(['x', 'Person'], axis=1, inplace=True)
-        abstract = create_abstract_level2(somebody, somebodys_name)
-        _map = create_map_level2(somebody)
+        if request.form['somebodys_label'] != "":
+            session['somebodys_label'] = request.form['somebodys_label']
+            somebodys_label = session['somebodys_label']
+            latitude = session['latitude']
+            longitude = session['longitude']
+            df = create_df_level2_label(somebodys_label, current_latitude=latitude, current_longitude=longitude)
+            somebodys_name = df.loc[0, 'Person']
+            df.drop(['x', 'Person'], axis=1, inplace=True)
+            abstract = create_abstract_level2_label(somebodys_label, somebodys_name)
+            _map = create_map_level2_label(somebodys_label)
+        else:
+            session['somebodys_name'] = request.form['somebodys_name']
+            somebodys_name = session['somebodys_name']
+            somebodys_label = ""
+            latitude = session['latitude']
+            longitude = session['longitude']
+            df = create_df_level2_name(somebodys_name, current_latitude=latitude, current_longitude=longitude)
+            df.drop(['x'], axis=1, inplace=True)
+            abstract = create_abstract_level2_name(somebodys_name)
+            _map = create_map_level2_name(somebodys_name)
         return render_template('level2.html',
                                latitude=latitude,
                                longitude=longitude,
-                               somebody=somebody,
+                               somebody=somebodys_label,
                                somebodys_name=somebodys_name,
                                abstract=abstract,
                                column_names=df.columns.values,
@@ -92,24 +103,34 @@ def level2():
 
 @app.route("/level2", methods=['POST'])
 def level2_post():
-    if request.form['latitude'] != "":
+    if "latitude" in request.form and request.form['latitude'] != "":
         session['latitude'] = request.form['latitude']
-    if request.form['longitude'] != "":
+    if "longitude" in request.form and request.form['longitude'] != "":
         session['longitude'] = request.form['longitude']
-    if request.form['somebodyLabel'] != "":
-        session['somebodyLabel'] = request.form['somebodyLabel']
-    latitude = session['latitude']
-    longitude = session['longitude']
-    somebody = session['somebodyLabel']
-    df = create_df_level2(somebody, current_latitude=latitude, current_longitude=longitude)
-    somebodys_name = df.loc[0, 'Person']
-    df.drop(['x', 'Person'], axis=1, inplace=True)
-    abstract = create_abstract_level2(somebody, somebodys_name)
-    _map = create_map_level2(somebody)
+    if request.form['somebodys_label'] != "":
+        session['somebodys_label'] = request.form['somebodys_label']
+        somebodys_label = session['somebodys_label']
+        latitude = session['latitude']
+        longitude = session['longitude']
+        df = create_df_level2_label(somebodys_label, current_latitude=latitude, current_longitude=longitude)
+        somebodys_name = df.loc[0, 'Person']
+        df.drop(['x', 'Person'], axis=1, inplace=True)
+        abstract = create_abstract_level2_label(somebodys_label, somebodys_name)
+        _map = create_map_level2_label(somebodys_label)
+    else:
+        session['somebodys_name'] = request.form['somebodys_name']
+        somebodys_name = session['somebodys_name']
+        somebodys_label = ""
+        latitude = session['latitude']
+        longitude = session['longitude']
+        df = create_df_level2_name(somebodys_name, current_latitude=latitude, current_longitude=longitude)
+        df.drop(['x'], axis=1, inplace=True)
+        abstract = create_abstract_level2_name(somebodys_name)
+        _map = create_map_level2_name(somebodys_name)
     return render_template('level2.html',
                            latitude=latitude,
                            longitude=longitude,
-                           somebody=somebody,
+                           somebody=somebodys_label,
                            somebodys_name=somebodys_name,
                            abstract=abstract,
                            column_names=df.columns.values,

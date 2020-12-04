@@ -11,13 +11,14 @@ Home Page
   <br>
   <p class="lead">This page shows objects named after <strong>{{somebodys_name}}</strong>
     in Germany, Austria, and Switzerland. </p>
-  You have entered the coordinates ({{latitude}}, {{longitude}}).<br>
-  <br>
+  <p class="lead">You have entered the coordinates ({{latitude}}, {{longitude}}).</p>
+
   Change your current location or the selected person:
   <form method="POST">
     <input name="latitude" type="text" placeholder="latitude" />
     <input name="longitude" type="text" placeholder="longitude" />
-    <input name="somebodyLabel" type="text" placeholder="somebody" />
+    <input name="somebodys_label" type="text" placeholder="somebodys label" />
+    <input name="somebodys_name" type="text" placeholder="somebody" />
     <input type="submit" value="Go">
   </form>
 
@@ -28,7 +29,10 @@ Home Page
   <br>
   <br>
 
-  {{abstract}}
+  {% autoescape false %}
+    {{abstract}}
+  {% endautoescape %}
+
 
   <br>
   <br>
