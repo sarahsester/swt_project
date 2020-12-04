@@ -4,6 +4,16 @@ import haversine as hs
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
+# Initializing SPARQL Wrapper and querying
+def run_query(endpoint, query):
+    agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11"
+    sparql = SPARQLWrapper(endpoint, agent=agent)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    return results
+
+
 def create_df_level1(latitude, longitude, radius, limit):
     query = '''
         prefix bd:       <http://www.bigdata.com/rdf#>
@@ -44,18 +54,18 @@ def create_df_level1(latitude, longitude, radius, limit):
         LIMIT {limit}
         '''.format(longitude=longitude, latitude=latitude, radius=radius, limit=limit)
 
-    # Initializing SPARQL Wrapper and querying
+    # Wikidata endpoint
     endpoint = 'https://query.wikidata.org/sparql'
-    sparql = SPARQLWrapper(endpoint, agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
 
+    # Run Query
+    results = run_query(endpoint, query)
+
+    # Wrap the results in a dataframe
     df = pd.DataFrame(results['results']['bindings'])
     for col in df.columns:
         df[col] = df[col].apply(lambda x: x['value'])
 
-    # Compute distance and sort according to distance
+    # Compute distance
     df['Distance (km)'] = df['Location'].apply(lambda point: compute_distance(new_point=point,
                                                                               current_longitude=longitude,
                                                                               current_latitude=latitude))
@@ -95,12 +105,11 @@ def create_abstract_level2(somebody, somebodys_name):
             }}
             '''.format(somebody=somebody)
 
-    # Initializing SPARQL Wrapper and querying
+    # DB SPARQL endpoint
     endpoint = 'http://dbpedia.org/sparql'
-    sparql = SPARQLWrapper(endpoint, agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    result = sparql.query().convert()
+
+    # Run Query
+    result = run_query(endpoint, query)
 
     # Trying to retrieve the comment. In case there is none or the person was not found. Return the error message.
     try:
@@ -152,12 +161,11 @@ def create_df_level2(somebody, current_latitude, current_longitude):
 
     '''.format(somebody=somebody)
 
-    # Initializing SPARQL Wrapper and querying
+    # Wikidata endpoint
     endpoint = 'https://query.wikidata.org/sparql'
-    sparql = SPARQLWrapper(endpoint, agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    results = sparql.query().convert()
+
+    # Run Query
+    results = run_query(endpoint, query)
 
     # Results
     df = pd.DataFrame(results['results']['bindings'])
