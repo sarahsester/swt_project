@@ -123,42 +123,42 @@ def create_abstract_level2_label(somebody, somebodys_name):
 
 def create_df_level2_label(somebody, current_latitude, current_longitude):
     query = '''
-        prefix bd:       <http://www.bigdata.com/rdf#>
-        prefix wd:       <http://www.wikidata.org/entity/>
-        prefix wdt:      <http://www.wikidata.org/prop/direct/>
-        prefix wikibase: <http://wikiba.se/ontology#>
+    prefix bd:       <http://www.bigdata.com/rdf#>
+    prefix wd:       <http://www.wikidata.org/entity/>
+    prefix wdt:      <http://www.wikidata.org/prop/direct/>
+    prefix wikibase: <http://wikiba.se/ontology#>
 
 
-        SELECT ?x ?xLabel ?Location ?countryLabel
-            (GROUP_CONCAT(?classLabel; separator=', ') AS ?Description)
+    SELECT ?x ?xLabel ?somebodyLabel ?Location ?countryLabel
+        (GROUP_CONCAT(?classlabel; separator=', ') AS ?classdescription)
 
-        WHERE {{
-          # x is named after
-          ?x wdt:P138 <{somebody}> ;
+    WHERE {{
+      # x is named after
+      ?x wdt:P138 <{somebody}> ;
 
-          # x has location
-             wdt:P625 ?Location ;
+      # x has location
+         wdt:P625 ?Location ;
 
-          # which Class is x (e.g. Street, church)
-             wdt:P31  ?class . 
-          
-          # get somebodys name (needed to display name on top of level 2)
-          ?x wdt:P138 ?somebody.
+      # which Class is x (e.g. Street, church)
+         wdt:P31  ?class . 
+         
+      # get somebodys name (needed to display name on top of level 2)
+      ?x wdt:P138 ?somebody.
 
-          # the class has a german label 
-          ?class rdfs:label ?classLabel .
-          FILTER ( lang(?classLabel) = "de" )
+      # the class has a german label 
+      ?class rdfs:label ?classlabel .
+      FILTER ( lang(?classlabel) = "de" )
 
-          # located in Germany, Austria, or Switzerland
-          ?x wdt:P17 ?country .
-          FILTER ( ?country = wd:Q39 || ?country = wd:Q40 || ?country = wd:Q183 )
+      # located in Germany, Austria, or Switzerland
+      ?x wdt:P17 ?country .
+      FILTER ( ?country = wd:Q39 || ?country = wd:Q40 || ?country = wd:Q183 )
 
-          # Retrieve Labels
-          SERVICE wikibase:label {{ bd:serviceParam wikibase:language "de". }}
+      # Retrieve Labels
+      SERVICE wikibase:label {{ bd:serviceParam wikibase:language "de". }}
 
-        }}
-        GROUP BY ?x ?xLabel ?Location ?countryLabel
-        LIMIT 1000
+    }}
+    GROUP BY ?x ?xLabel ?somebodyLabel ?Location ?countryLabel
+    LIMIT 1000
 
     '''.format(somebody=somebody)
 
@@ -174,12 +174,12 @@ def create_df_level2_label(somebody, current_latitude, current_longitude):
         df[col] = df[col].apply(lambda x: x['value'])
 
     # Compute distance
-    #df['Distance (km)'] = df['Location'].apply(lambda point: compute_distance(new_point=point,
-                                                                              #current_longitude=current_longitude,
-                                                                              #current_latitude=current_latitude))
+    df['Distance (km)'] = df['Location'].apply(lambda point: compute_distance(new_point=point,
+                                                                              current_longitude=current_longitude,
+                                                                              current_latitude=current_latitude))
 
     # Sort according to distance
-    #df.sort_values(by=['Distance (km)'], inplace=True)
+    df.sort_values(by=['Distance (km)'], inplace=True)
 
     # Rename columns
     df.rename(columns={"xLabel": "Object", "somebodyLabel": "Person", "countryLabel": "Country",

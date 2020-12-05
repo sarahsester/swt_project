@@ -70,9 +70,9 @@ def level1_post():
         latitude = session['latitude']
         longitude = session['longitude']
         radius = session['radius']
-        df = create_df_level1(latitude=latitude, longitude=longitude, radius=radius, limit='100')
+        df = create_df_level1(latitude=latitude, longitude=longitude, radius=radius, limit='2000')
         df.drop(['x'], axis=1, inplace=True)
-        _map = create_map_level1(latitude=latitude, longitude=longitude, radius=radius, limit='100')
+        _map = create_map_level1(latitude=latitude, longitude=longitude, radius=radius, limit='2000')
         return render_template('level1.html',
                                latitude=latitude,
                                longitude=longitude,
@@ -113,8 +113,8 @@ def level2_post():
         latitude = session['latitude']
         longitude = session['longitude']
         df = create_df_level2_label(somebodys_label, current_latitude=latitude, current_longitude=longitude)
-        somebodys_name = "test" #df.loc[0, 'Person']
-        #df.drop(['x', 'Person'], axis=1, inplace=True)
+        somebodys_name = df.loc[0, 'Person']
+        df.drop(['x', 'Person'], axis=1, inplace=True)
         abstract = create_abstract_level2_label(somebodys_label, somebodys_name)
         _map = create_map_level2_label(somebodys_label)
     else:
