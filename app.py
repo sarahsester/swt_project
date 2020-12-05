@@ -113,8 +113,8 @@ def level2_post():
         latitude = session['latitude']
         longitude = session['longitude']
         df = create_df_level2_label(somebodys_label, current_latitude=latitude, current_longitude=longitude)
-        somebodys_name = df.loc[0, 'Person']
-        df.drop(['x', 'Person'], axis=1, inplace=True)
+        somebodys_name = "test" #df.loc[0, 'Person']
+        #df.drop(['x', 'Person'], axis=1, inplace=True)
         abstract = create_abstract_level2_label(somebodys_label, somebodys_name)
         _map = create_map_level2_label(somebodys_label)
     else:
