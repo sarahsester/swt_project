@@ -183,7 +183,7 @@ def create_df_level2_label(somebody, current_latitude, current_longitude):
 
     # Rename columns
     df.rename(columns={"xLabel": "Object", "somebodyLabel": "Person", "countryLabel": "Country",
-                       "Location": "Object Location"}, inplace=True)
+                       "classdescription": "Description", "Location": "Object Location"}, inplace=True)
 
     return df
 
