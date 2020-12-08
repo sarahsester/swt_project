@@ -70,9 +70,9 @@ def level1_post():
         latitude = session['latitude']
         longitude = session['longitude']
         radius = session['radius']
-        df = create_df_level1(latitude=latitude, longitude=longitude, radius=radius, limit='100')
+        df = create_df_level1(latitude=latitude, longitude=longitude, radius=radius, limit='2000')
         df.drop(['x'], axis=1, inplace=True)
-        _map = create_map_level1(latitude=latitude, longitude=longitude, radius=radius, limit='100')
+        _map = create_map_level1(latitude=latitude, longitude=longitude, radius=radius, limit='2000')
         return render_template('level1.html',
                                latitude=latitude,
                                longitude=longitude,
